@@ -6,7 +6,7 @@
 version: 2
 updates:
   - package-ecosystem: github-actions
-    directory: / # GitHub Actions のみ固定で"/"
+    directory: /build-uv-package
     schedule:
       interval: weekly
     ignore:
