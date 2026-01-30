@@ -6,7 +6,8 @@
 version: 2
 updates:
   - package-ecosystem: github-actions
-    directory: /build-uv-package
+    directories:
+      - /build-uv-package
     schedule:
       interval: weekly
     ignore:
