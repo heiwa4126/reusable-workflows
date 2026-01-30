@@ -19,7 +19,7 @@ jobs:
   publish-testpypi:
     name: Publish to TestPyPI
     runs-on: ubuntu-latest
-    if: github.repository_owner == github.actor
+    # if: github.repository_owner == github.actor
     # environment: testpypi
     permissions:
       id-token: write # IMPORTANT: this permission is mandatory for Trusted Publishing
