@@ -1,0 +1,41 @@
+name: Build and Publish to PyPI
+
+on:
+  push:
+    tags:
+      # Regular releases: e.g. v1.2.3
+      - "v[0-9]+.[0-9]+.[0-9]+"
+      # # Pre-releases: e.g. v1.2.3rc1, v1.2.3b1, v1.2.3a1 (PEP 440 format)
+      # - "v[0-9]+.[0-9]+.[0-9]+(a|b|rc)[0-9]+"
+
+concurrency:
+  group: publish-pypi-${{ github.ref }}
+  cancel-in-progress: true
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  publish-pypi:
+    name: Publish to PyPI
+    runs-on: ubuntu-latest
+    if: github.repository_owner == github.actor
+    environment: pypi
+    permissions:
+      id-token: write # IMPORTANT: this permission is mandatory for Trusted Publishing
+      contents: read
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          fetch-depth: 1
+
+      - name: Build package
+        uses: ./.github/actions/build-uv-package
+
+      - name: Publish to PyPI
+        uses: pypa/gh-action-pypi-publish@ed0c53931b1dc9bd32cbe73a98c7f6766f8a527e # v1.13.0
+        with:
+          skip-existing: true

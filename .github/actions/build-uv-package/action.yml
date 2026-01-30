@@ -1,0 +1,30 @@
+name: Build
+description: パッケージを ./dist にビルドします
+
+runs:
+  using: composite
+  steps:
+    - name: Set up uv
+      uses: astral-sh/setup-uv@61cb8a9741eeb8a550a1b8544337180c0fc8476b # v7.2.0
+      with:
+        enable-cache: true
+
+    - name: Audit dependencies
+      shell: bash
+      run: uvx uv-secure ./uv.lock
+
+    - name: Set up Python (uv respects ./.python-version)
+      shell: bash
+      run: uv python install
+
+    - name: "INFO: Python and uv version"
+      shell: bash
+      run: |
+        echo "::group::Show Python and uv version"
+        uv run python --version
+        uv --version
+        echo "::endgroup::"
+
+    - name: Build distribution packages
+      shell: bash
+      run: uv run poe build
