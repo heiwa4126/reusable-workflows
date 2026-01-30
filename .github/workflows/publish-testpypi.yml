@@ -33,7 +33,7 @@ jobs:
 
       - name: Build package
         # uses: ./.github/actions/build-uv-package
-        uses: heiwa4126/reusable-workflows/.github/actions/build-uv-package@v1.2.0
+        uses: heiwa4126/reusable-workflows/.github/actions/build-uv-package@181f1f031458a124a53b6f43b8dc0242ed7e1963 # v0.0.0
 
       - name: Publish to TestPyPI
         uses: pypa/gh-action-pypi-publish@ed0c53931b1dc9bd32cbe73a98c7f6766f8a527e # v1.13.0
