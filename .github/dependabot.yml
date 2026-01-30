@@ -5,14 +5,6 @@
 
 version: 2
 updates:
-  - package-ecosystem: "uv" # See documentation for possible values
-    directory: "/" # Location of package manifests
-    schedule:
-      interval: "monthly"
-    groups:
-      all-dependencies:
-        patterns:
-          - "*"
   - package-ecosystem: github-actions
     directory: / # GitHub Actions のみ固定で"/"
     schedule:
