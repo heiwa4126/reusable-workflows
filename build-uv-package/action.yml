@@ -1,7 +1,9 @@
 name: Build uv package
 description: |
   uv パッケージを ./dist にビルドします。
-  タスクランナーとして poe を使用し、`poe build` でパッケージをビルドすることを想定。
+  タスクランナーとして PoeThePoet を使用し、
+  `poe build` でパッケージが `./dist` にビルドできることを想定。
+  Python バージョンは ./.python-version に従います。
 
 inputs:
   checkout:

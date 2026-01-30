@@ -1,8 +1,6 @@
 # reusable-workflows
 
 管理がめんどくさくなってきたので、
-いままで作った GitHub Actions の workflows をここに置いて、reusable にする。
-
-あと action も。
+いままで作った GitHub Actions の actions と reusable-workflows をここに置く。
 
 主に自分用。ドキュメントはだんだんと充実させていく
