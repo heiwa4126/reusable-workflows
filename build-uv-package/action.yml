@@ -1,5 +1,5 @@
 name: Build uv package
-description: パッケージを ./dist にビルドします
+description: uv パッケージを ./dist にビルドします
 
 runs:
   using: composite
