@@ -1,10 +1,11 @@
 name: Build and Publish to TestPyPI
 
 on:
-  push:
-    tags:
-      # Test release tags for TestPyPI validation
-      - test-*
+  workflow_call:
+  # push:
+  #   tags:
+  #     # Test release tags for TestPyPI validation
+  #     - test-*
 
 concurrency:
   group: publish-testpypi-${{ github.ref }}
