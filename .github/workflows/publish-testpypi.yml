@@ -8,7 +8,7 @@ on:
   #     - test-*
 
 concurrency:
-  group: publish-testpypi-${{ github.ref }}
+  group: publish-testpypi-reusable-workflows${{ github.ref }}
   cancel-in-progress: true
 
 defaults:
