@@ -14,7 +14,6 @@ inputs:
   # repository-url:
   #   description: |
   #     発行先のリポジトリ URL。省略時は
-
   #     か TestPyPI(https://test.pypi.org/legacy/) を指定
   #   required: false
   #   default: 'https://test.pypi.org/legacy/'
@@ -53,8 +52,9 @@ runs:
       shell: bash
       run: uv run poe build
 
-    - name: Publish
-      uses: pypa/gh-action-pypi-publish@ed0c53931b1dc9bd32cbe73a98c7f6766f8a527e # v1.13.0
-      with:
-        # repository-url: ${{ inputs.repository-url }}
-        repository-url: 'https://test.pypi.org/legacy/'
+    # 変な Docker イメージを読みに行こうとするので共有できない
+    # - name: Publish
+    #   uses: pypa/gh-action-pypi-publish@ed0c53931b1dc9bd32cbe73a98c7f6766f8a527e # v1.13.0
+    #   with:
+    #     # repository-url: ${{ inputs.repository-url }}
+    #     repository-url: 'https://test.pypi.org/legacy/'
