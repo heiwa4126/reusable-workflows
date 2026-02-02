@@ -1,0 +1,83 @@
+name: Build pnpm package and Publish
+description: |
+  pnpm の npm パッケージを ./dist にビルドし
+  npmjs に公開します。
+  run-script の `prepublishOnly` にリント、ビルド、テストが含まれていることを想定。
+
+inputs:
+  checkout:
+    description: |
+      リポジトリをチェックアウトするかどうか
+    required: false
+    default: 'false'
+
+runs:
+  using: composite
+  steps:
+    - name: Checkout repository
+      if: inputs.checkout == 'true'
+      uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      with:
+        fetch-depth: 1
+
+    - name: Setup pnpm
+      uses: pnpm/action-setup@41ff72655975bd51cab0327fa583b6e92b6d3061 # v4.2.0
+      with:
+        version: latest
+        run_install: false
+
+    - name: Setup Node.js
+      uses: actions/setup-node@6044e13b5dc448c55e2357c09f80417699197238 # v6.2.0
+      with:
+        node-version: "lts/*"
+        cache: pnpm
+
+    # - run: npm install -g npm@latest
+    # 最近はおおむね不要. nodeの最新LTS版バンドルnpmで十分
+
+    - name: "INFO: Show versions of Node.js, npm, and pnpm"
+      shell: bash
+      run: node -v && npm -v && pnpm -v
+
+    - name: "INFO: Show .npmrc (if exists)"
+      # actions/setup-node で自動生成される .npmrc の中身を確認する
+      shell: bash
+      run: test -n "${NPM_CONFIG_USERCONFIG}" && test -f "${NPM_CONFIG_USERCONFIG}" && cat "${NPM_CONFIG_USERCONFIG}" || echo "NPM_CONFIG_USERCONFIG not found"
+      ## 今回は registry-url: も scope: も指定していないので .npmrc は自動生成されない
+
+    - name: Install dependencies
+      run: pnpm install --frozen-lockfile
+      shell: bash
+
+    # - run: npm run build --if-present
+    # - run: npm test
+    ## このプロジェクトでは prepublishOnly に書いてあるので不要
+
+    - name: Show whether this is a pre-release or stable release
+      shell: bash
+      run: |
+        if [[ $GITHUB_REF_NAME == *-* ]]; then
+          echo "TAG=dev" >> "${GITHUB_ENV}"
+        else
+          echo "TAG=latest" >> "${GITHUB_ENV}"
+        fi
+
+    - name: Publish to npm via OIDC (Trusted publishing)
+      shell: bash
+      run: npm publish --access public --tag "${TAG}"
+      env:
+        NODE_AUTH_TOKEN: "" # 念のため
+
+# # おまけ。releases にもtgzをアップロードする
+# - name: build package
+#   run: pnpm run build
+# - name: Pack package tarball
+#   run: pnpm pack
+# - name: Create GitHub Release
+#   uses: softprops/action-gh-release@a06a81a03ee405af7f2048a818ed3f03bbf83c7b # v2.5.0
+#   with:
+#     files: ./*.tgz
+#     generate_release_notes: true
+#     prerelease: ${{ contains(github.ref_name, '-') }}
+#   env:
+#     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
