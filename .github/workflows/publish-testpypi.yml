@@ -1,0 +1,34 @@
+name: Build and Publish to TestPyPI (Reusable Workflow)
+
+on:
+  # push:
+  #   tags:
+  #     # Test release tags for TestPyPI validation
+  #     - test-*
+  workflow_dispatch:
+
+concurrency:
+  group: reusable-workflows-publish-testpypi-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  publish-testpypi:
+    name: Build and Publish to TestPyPI (Reusable Workflow)
+    runs-on: ubuntu-latest
+    # if: github.repository_owner == github.actor
+    # environment: testpypi
+    permissions:
+      id-token: write # IMPORTANT: this permission is mandatory for Trusted Publishing
+      contents: read
+
+    steps:
+      - name: Build package
+        uses: heiwa4126/reusable-workflows/build-uv-package@63181b74582de22141f79c494ffa3aae54ac2370 # v0.0.1
+        with:
+          checkout: true
+
+      - name: Publish to TestPyPI
+        uses: pypa/gh-action-pypi-publish@ed0c53931b1dc9bd32cbe73a98c7f6766f8a527e # v1.13.0
+        with:
+          repository-url: https://test.pypi.org/legacy/
+          # attestations: true  # PEP740 attestations (enabled by default)
