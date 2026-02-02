@@ -5,7 +5,7 @@ on:
   #   tags:
   #     # Test release tags for TestPyPI validation
   #     - test-*
-  workflow_dispatch:
+  workflow_call:
 
 concurrency:
   group: reusable-workflows-publish-testpypi-${{ github.ref }}
@@ -16,7 +16,7 @@ jobs:
     name: Build and Publish to TestPyPI (Reusable Workflow)
     runs-on: ubuntu-latest
     # if: github.repository_owner == github.actor
-    # environment: testpypi
+    environment: testpypi
     permissions:
       id-token: write # IMPORTANT: this permission is mandatory for Trusted Publishing
       contents: read
