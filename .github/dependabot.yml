@@ -9,6 +9,7 @@ updates:
     directories:
       - /   # for /.github/workflows/*.yml
       - /build-uv-package
+      - /build-pnpm-package-and-publish
     schedule:
       interval: weekly
     ignore:

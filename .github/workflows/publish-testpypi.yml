@@ -27,7 +27,7 @@ jobs:
 
     steps:
       - name: Build package
-        uses: heiwa4126/reusable-workflows/build-uv-package@63181b74582de22141f79c494ffa3aae54ac2370 # v0.0.1
+        uses: heiwa4126/reusable-workflows/build-uv-package@bec761034a01aa4f05753ff3aeee2b8ae5a42e26 # v0.0.3
         with:
           checkout: true
 
