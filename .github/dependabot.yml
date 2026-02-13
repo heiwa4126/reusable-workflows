@@ -8,8 +8,9 @@ updates:
   - package-ecosystem: github-actions
     directories:
       - /   # for /.github/workflows/*.yml
-      - /build-uv-package
-      - /build-pnpm-package-and-publish
+      - ./build-uv-package
+      - ./build-pnpm-package-and-publish
+      - ./set-up-git-user
     schedule:
       interval: weekly
     ignore:
