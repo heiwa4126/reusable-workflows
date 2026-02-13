@@ -1,13 +1,60 @@
-name: Set up git user
+name: Build uv package
 description: |
-  まれに必要になる git ユーザの設定を行います(ユニットテストにgit操作がある場合など)
-  emailとユーザ名は github-actions の正式なものです
+  uv パッケージを ./dist にビルドします。
+  タスクランナーとして PoeThePoet を使用し、
+  `poe build` でパッケージが `./dist` にビルドできることを想定。
+  ビルドに使う Python バージョンは .python-version に従います。
+
+inputs:
+  checkout:
+    description: |
+      リポジトリをチェックアウトするかどうか
+    required: false
+    default: 'false'
+  # repository-url:
+  #   description: |
+  #     発行先のリポジトリ URL。省略時は
+  #     か TestPyPI(https://test.pypi.org/legacy/) を指定
+  #   required: false
+  #   default: 'https://test.pypi.org/legacy/'
 
 runs:
   using: composite
   steps:
-    - name: Set up git user
+    - name: Checkout repository
+      if: inputs.checkout == 'true'
+      uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      with:
+        fetch-depth: 1
+
+    - name: Set up uv
+      uses: astral-sh/setup-uv@eac588ad8def6316056a12d4907a9d4d84ff7a3b # v7.3.0
+      with:
+        enable-cache: true
+
+    - name: Audit dependencies
+      shell: bash
+      run: uvx uv-secure ./uv.lock
+
+    - name: Set up Python (uv respects ./.python-version)
+      shell: bash
+      run: uv python install
+
+    - name: "INFO: Python and uv version"
       shell: bash
       run: |
-        git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
-        git config --global user.name "github-actions[bot]"
+        echo "::group::Show Python and uv version"
+        uv run python --version
+        uv --version
+        echo "::endgroup::"
+
+    - name: Build distribution packages
+      shell: bash
+      run: uv run poe build
+
+    # 変な Docker イメージを読みに行こうとするので共有できない
+    # - name: Publish
+    #   uses: pypa/gh-action-pypi-publish@ed0c53931b1dc9bd32cbe73a98c7f6766f8a527e # v1.13.0
+    #   with:
+    #     # repository-url: ${{ inputs.repository-url }}
+    #     repository-url: 'https://test.pypi.org/legacy/'
