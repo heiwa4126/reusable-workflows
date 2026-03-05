@@ -14,6 +14,16 @@ GitHub Copilot から `/github-actions-security` で実行できる。
 あと `./lint.sh` も手動で実行すること。
 `pinact run -u` もときどき実行。
 
+## aqua.yaml
+
+linter などをインストールする用
+
+```sh
+aqua i
+```
+
+でインストール
+
 ## 愚痴
 
 Dependabot が action.yml をサブディレクトリに置くと見てくれない...
