@@ -21,3 +21,5 @@ updates:
       all-dependencies:
         patterns:
           - "*"
+    cooldown:
+      default-days: 7
