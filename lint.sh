@@ -3,3 +3,8 @@ set -euo pipefail
 
 actionlint -verbose
 find -name action.yml -o -name action.yaml | xargs -r action-validator -v
+
+zizmor .
+
+ghalint run
+ghalint act
