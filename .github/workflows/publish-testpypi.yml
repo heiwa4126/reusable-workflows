@@ -17,6 +17,7 @@ concurrency:
 
 jobs:
   publish-testpypi:
+    timeout-minutes: 10 # 適切な値を設定
     name: Build and Publish to TestPyPI (Reusable Workflow)
     runs-on: ubuntu-latest
     # if: github.repository_owner == github.actor
