@@ -29,11 +29,13 @@ description: Provides security rules and best practices for GitHub Actions workf
 ### ルール: `run:` セクション内で `${{ }}` を直接展開しない
 
 **NG 例:**
+
 ```yaml
 - run: echo "Title: ${{ github.event.issue.title }}"
 ```
 
 **OK 例:**
+
 ```yaml
 - env:
     ISSUE_TITLE: ${{ github.event.issue.title }}
@@ -48,6 +50,7 @@ description: Provides security rules and best practices for GitHub Actions workf
 ### ルール: `workflow_call` の入力値を `run:` 内で直接展開しない
 
 **NG 例:**
+
 ```yaml
 on:
   workflow_call:
@@ -59,10 +62,11 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      - run: deploy.sh ${{ inputs.environment }}  # 直接展開
+      - run: deploy.sh ${{ inputs.environment }} # 直接展開
 ```
 
 **OK 例:**
+
 ```yaml
 on:
   workflow_call:
@@ -98,11 +102,13 @@ jobs:
 ### ルール: サードパーティ Action はコミットハッシュで固定する
 
 **NG 例:**
+
 ```yaml
 - uses: actions/checkout@v4
 ```
 
 **OK 例:**
+
 ```yaml
 - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
 ```
@@ -114,17 +120,19 @@ jobs:
 ### ルール: `pull_request_target` の使用は慎重に
 
 **NG 例:**
+
 ```yaml
 on: pull_request_target
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4  # フォークのコードをチェックアウト
-      - run: npm install && npm test  # フォークの任意コードが実行される
+      - uses: actions/checkout@v4 # フォークのコードをチェックアウト
+      - run: npm install && npm test # フォークの任意コードが実行される
 ```
 
 **OK 例 (必要な場合はシークレットへのアクセスを分離):**
+
 ```yaml
 on: pull_request_target
 jobs:
@@ -133,7 +141,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.pull_request.head.sha }}  # フォークのコードは実行しない
+          ref: ${{ github.event.pull_request.head.sha }} # フォークのコードは実行しない
 ```
 
 **理由:**
@@ -143,6 +151,7 @@ jobs:
 ### ルール: ワークフローに最小権限を設定する
 
 **NG 例 (デフォルトの広い権限を使用):**
+
 ```yaml
 jobs:
   build:
@@ -152,15 +161,16 @@ jobs:
 ```
 
 **OK 例:**
+
 ```yaml
 permissions:
-  contents: read  # ジョブに必要な権限のみ付与
+  contents: read # ジョブに必要な権限のみ付与
 
 jobs:
   build:
     runs-on: ubuntu-latest
     permissions:
-      contents: read  # ジョブ単位でも設定可能
+      contents: read # ジョブ単位でも設定可能
     steps:
       - run: echo "hello"
 ```
@@ -172,11 +182,13 @@ jobs:
 ### ルール: シークレットをログに出力しない
 
 **NG 例:**
+
 ```yaml
 - run: echo "TOKEN=${{ secrets.MY_TOKEN }}"
 ```
 
 **OK 例:**
+
 ```yaml
 - env:
     MY_TOKEN: ${{ secrets.MY_TOKEN }}
@@ -192,6 +204,7 @@ GitHub Actions はシークレットの値をログでマスクするが、Base6
 ### ルール: 外部からの入力値を使う `workflow_dispatch` では入力値を検証する
 
 **NG 例:**
+
 ```yaml
 on:
   workflow_dispatch:
@@ -203,10 +216,11 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      - run: deploy.sh ${{ inputs.environment }}  # 未検証の入力を直接使用
+      - run: deploy.sh ${{ inputs.environment }} # 未検証の入力を直接使用
 ```
 
 **OK 例:**
+
 ```yaml
 on:
   workflow_dispatch:

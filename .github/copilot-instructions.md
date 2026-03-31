@@ -16,7 +16,7 @@
 - Follow Python naming conventions
 - Use type hints where appropriate
 - Use argparse for command line interface
-- Main entry point in __main__.py with argument parsing
+- Main entry point in **main**.py with argument parsing
 
 ## Testing
 
