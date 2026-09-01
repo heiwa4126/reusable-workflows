@@ -1,0 +1,86 @@
+name: Build bun package and Publish
+description: |
+  bun の npm パッケージを ./dist にビルドし
+  npmjs に公開します。
+  run-script の `prepublishOnly` にリント、ビルド、テストが含まれていることを想定。
+
+inputs:
+  checkout:
+    description: |
+      リポジトリをチェックアウトするかどうか
+    required: false
+    default: "false"
+
+runs:
+  using: composite
+  steps:
+    - name: Checkout repository
+      if: inputs.checkout == 'true'
+      uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      with:
+        fetch-depth: 1
+        persist-credentials: false
+
+    - name: Setup Bun
+      uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
+      with:
+        bun-version: latest
+        # no-cache: false # (default)
+
+    # 依存パッケージのインストールキャッシュは setup-bun ではカバーされないので明示的に指定
+    # npm の cache パラメータに bun もないので明示的にactions/cacheを使う
+    - name: Cache Bun install cache
+      uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+      with:
+        path: ~/.bun/install/cache
+        key: ${{ runner.os }}-bun-${{ hashFiles('**/bun.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-bun-
+
+    #---- パッケージ生成本体
+    - name: Install dependencies
+      run: bun ci
+      shell: bash
+
+    - name: Test
+      run: bun test
+      shell: bash
+
+    - name: Build
+      run: bun run build
+      shell: bash
+
+    #---- `npm publish` 関連
+    - name: Setup Node (for npm publish)
+      uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+      with:
+        node-version: "24" # `npm publish` 用だけなので固定でOK
+        registry-url: "https://registry.npmjs.org"
+
+    # - run: npm install -g npm@latest
+    # 最近はおおむね不要. nodeの最新LTS版バンドルnpmで十分
+
+    - name: "INFO: Show versions of Node.js, npm, and bun"
+      shell: bash
+      run: node -v && npm -v && bun -v
+
+    - name: "INFO: Show .npmrc (if exists)"
+      # actions/setup-node で自動生成される .npmrc の中身を確認する
+      shell: bash
+      run: test -n "${NPM_CONFIG_USERCONFIG}" && test -f "${NPM_CONFIG_USERCONFIG}" && cat "${NPM_CONFIG_USERCONFIG}" || echo "NPM_CONFIG_USERCONFIG not found"
+      ## 今回は registry-url: も scope: も指定していないので .npmrc は自動生成されない
+
+    - name: Show whether this is a pre-release or stable release
+      shell: bash
+      run: |
+        if [[ $GITHUB_REF_NAME == *-* ]]; then
+          echo "TAG=dev" >> "${GITHUB_ENV}"
+        else
+          echo "TAG=latest" >> "${GITHUB_ENV}"
+        fi
+
+    - name: Publish to npm via OIDC (Trusted publishing)
+      shell: bash
+      run: npm publish --access public --tag "${TAG}"
+      env:
+        NODE_AUTH_TOKEN: "" # 念のため
